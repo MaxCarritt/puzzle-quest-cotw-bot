@@ -47,7 +47,7 @@ def getPqWindowScreenShot():
     if game_window is not None:
         screenShot = pyautogui.screenshot(region=(
             game_window.left, game_window.top, game_window.width, game_window.height))
-        return screenShot, game_window
+    return screenShot, game_window
 
 
 def detect_icons(screen, icon_templates, debug=False):
