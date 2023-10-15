@@ -2,6 +2,8 @@
 
 a bot to play Puzzle Quest - Challenge of the Warlords for the Nintendo DS
 
+https://www.youtube.com/watch?v=kb556f0fcpg
+
 Any emulator should theoretically work,but I'm using DeSmuMe on Windows 11. The current implementation for clicking requires this running on Windows.
 
 
