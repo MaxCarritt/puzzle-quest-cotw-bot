@@ -1,0 +1,5 @@
+numpy==1.25.2
+opencv_python==4.8.0.76
+PyAutoGUI==0.9.54
+PyGetWindow==0.0.9
+pywin32==306

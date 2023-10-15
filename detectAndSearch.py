@@ -57,7 +57,7 @@ def detect_icons(screen, icon_templates, debug=False):
     Args:
         screen: A PIL Image object representing the screen image.
         icon_templates: A dictionary of icon names and corresponding template images.
-        debug: A boolean indicating whether to display debug information.
+        debug: A boolean indicating whether to display debug informationpyt.
 
     Returns:
         A dictionary of icon names and corresponding lists of locations where they were found.
