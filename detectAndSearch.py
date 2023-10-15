@@ -145,37 +145,6 @@ def findGrid(debug=False):
 		cv2.waitKey(0)
 		cv2.destroyAllWindows()
 
-def removeOutliers(allLocations):
-	# remove any gems that have y coordinates thate is higher than 200
-	newLocations = {}
-	for gem_type, locs in allLocations.items():
-		new_locs = []
-		for loc in locs:
-			if loc[1] < 600:
-				new_locs.append(loc)
-		newLocations[gem_type] = new_locs
-	return newLocations
-
-	# # Calculate the average distance between all pairs of locations
-	# distances = []
-	# for loc1 in allLocations.values():
-	# 	for loc2 in allLocations.values():
-	# 		if loc1 != loc2:
-	# 			distance = math.sqrt((loc1[0][0] - loc2[0][0])**2 + (loc1[0][1] - loc2[0][1])**2)
-	# 			distances.append(distance)
-	# avg_distance = sum(distances) / len(distances)
-
-	# # Remove locations that are far away from the other gems
-	# for gem_type, locs in allLocations.items():
-	# 	new_locs = []
-	# 	for loc in locs:
-	# 		distances = [math.sqrt((loc[0] - other_loc[0])**2 + (loc[1] - other_loc[1])**2) for other_loc in locs]
-	# 		avg_distance_for_gem = sum(distances) / len(distances)
-	# 		if avg_distance_for_gem < avg_distance * 1.5:
-	# 			new_locs.append(loc)
-	# 	allLocations[gem_type] = new_locs
-
-	# return allLocations
 
 def findTopLeft(allLocations):
 	min_x, min_y = float('inf'), float('inf') 

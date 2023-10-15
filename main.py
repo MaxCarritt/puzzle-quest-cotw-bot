@@ -29,26 +29,6 @@ def check_top_right_right(row, col, foundGemArray, thisGem):
 			return True
 	return False
 
-def check_moves(foundGemArray, debug=False):
-	moves = []
-	rows, cols = len(foundGemArray), len(foundGemArray[0])
-	for row in range(rows):
-		for col in range(cols):
-			thisGem = foundGemArray[row,col]
-			#check if moving a gem up will make a match of 3 or more
-			upMove = 0
-			if check_top_left(row, col, foundGemArray, thisGem):
-				upMove += 1
-			if check_top_right(row, col, foundGemArray, thisGem):
-				upMove += 1
-			# if check_top_right_right(row, col, foundGemArray, thisGem):
-			# 	upMove += 1
-			if upMove == 2:
-				moves.append((row,col,'up', thisGem))
-	print(moves)
-	return  moves
-
-
 def find_valid_moves(foundGemArray, debug=False):
 	moves = [] 
 	# if all the gems are empty in row 1 then return no moves
@@ -104,14 +84,7 @@ def find_valid_moves(foundGemArray, debug=False):
 				futureArray = foundGemArray.copy()
 				futureArray[i-1,j] = thisGem
 				futureArray[i,j] = foundGemArray[i-1,j] # swap the two gems
-				series_length = get_series_length(futureArray)
-
-				# if i == 2 and j == 5:
-				# 	print("UP SKULL HERE")
-				# 	pprint.pprint(futureArray)
-				# 	# write future array to json file 
-				# 	with open('futureArray.json', 'w') as outfile:
-				# 		json.dump(futureArray.tolist(), outfile)	
+				series_length = get_series_length(futureArray)	
 
 
 				if series_length > 0 :
@@ -223,29 +196,46 @@ def main():
 		print ("It's your turn!")
 		time.sleep(0.5) # need to detect some kind of wait to see if the game board  has settled
 		
- 
-		screenshot , game_window = getPqWindowScreenShot()  # Capture the screen
-		allLocations = detect_icons(screenshot,icon_templates, debug=False)
-		# allLocations = removeOutliers(allLocations)
+		screenshot , game_window = getPqWindowScreenShot()  # Capture the screen again for finding gem locations
+		allLocations = detect_icons(screenshot,icon_templates, debug=False) # get all locations of gems
 
+		# find the top left and bottom right of the grid
 		topLeft = findTopLeft(allLocations)
 		bottomRight = findBottomRight(allLocations)
 		if float('inf') in topLeft or float('-inf') in bottomRight:
 			print("No gems found")
 			time.sleep(1)
 			continue
-
+		
+		# builds a grid of the gems
 		grid = getGrid(screenshot , topLeft, bottomRight, debug=False)
+		# identifies the most likely gem type in each cell
 		foundGemArray , locations_in_cells = searchGrid(grid, allLocations, screenshot, debug=False)
 
-		#moves = check_moves(foundGemArray)
+		# checks each gem , and determines if moving it will result in a match of 3 or more
 		moves = find_valid_moves(foundGemArray)
-		# print(moves)
+		pprint.pprint(moves)
+
+
+
 		if moves:
-			print(f"Best move: {moves[0]}")
-			performMove(moves[0], locations_in_cells, game_window,  debug=False)
-			print("Move performed")
-			time.sleep(0.5)
+			# if moving a skull is possible, do that over anything else
+			movePerformed = False
+			for move in moves:
+				if move[4] == 'skull.png':
+					print('Found a skull move')
+					performMove(move, locations_in_cells, game_window, debug=False)
+					print("Move performed")
+					time.sleep(0.5)
+					movePerformed = True
+					break
+			
+			if not movePerformed:
+				print("No skull moves found")
+				print(f"Best move: {moves[0]}")
+				performMove(moves[0], locations_in_cells, game_window,  debug=False)
+				print("Move performed")
+				time.sleep(0.5)
 		else:
 			print("No moves found")
 			time.sleep(1)
