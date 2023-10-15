@@ -160,16 +160,17 @@ def findGrid(debug=False):
     Finds the grid in the screenshot of the game window and highlights it with a red rectangle.
 
     Args:
-        debug (bool, optional): If True, displays the screenshot with the detected grid. Defaults to False.
+        debug (bool, optional): If True, displays the screenshot 
+        with the detected grid. Defaults to False.
 
     Returns:
         None
-    """    
+    """
     gameScreen = getPqWindowScreenShot()
     gameScreen = cv2.cvtColor(np.array(gameScreen), cv2.COLOR_RGB2BGR)
     gameScreen = cv2.cvtColor(gameScreen, cv2.COLOR_BGR2GRAY)
 
-    grid_example = cv2.imread('.\misc_images\grid_example.png', cv2.IMREAD_UNCHANGED)
+    grid_example = cv2.imread('.\\misc_images\\grid_example.png', cv2.IMREAD_UNCHANGED)
     grid_example = cv2.cvtColor(grid_example, cv2.COLOR_BGR2GRAY)
     grid_example = grid_example.astype(gameScreen.dtype)
 
@@ -204,7 +205,7 @@ def findTopLeft(allLocations):
                 min_y = y
 
     # print(f"Top-left coordinate: ({min_x}, {min_y})")
-    # TODO: this should be more dynamic, will break at differnt size
+    # TODO: this should be more dynamic, will break at differnt size  # pylint: disable=fixme
     return (min_x - 20, min_y - 10)
 
 
@@ -224,7 +225,7 @@ def findBottomRight(allLocations):
     max_x += 40
     max_y += 40
     # print(f"Bottom-right coordinate: ({max_x}, {max_y})")
-    # TODO: this should be more dynamic, will break at differnt size
+    # TODO: this should be more dynamic, will break at differnt size # pylint: disable=fixme
     return (max_x + 10, max_y+10)
 
 
@@ -301,7 +302,10 @@ def searchGrid(grid, allLocations, gameScreen, debug=False):
         gem_locations = [(gem, loc) for gem in allLocations.keys()
                          for loc in allLocations[gem]]
         for gem, loc in gem_locations:
-            if loc[0] > cellRange[0] and loc[0] < cellRange[2] and loc[1] > cellRange[1] and loc[1] < cellRange[3]:
+            if loc[0] > cellRange[0] \
+                and loc[0] < cellRange[2] \
+                and loc[1] > cellRange[1] \
+                and loc[1] < cellRange[3]:
                 gems_in_cell.append(gem)
 
         # pick the most common gem in the cell
@@ -350,7 +354,7 @@ def searchGrid(grid, allLocations, gameScreen, debug=False):
         print()
 
     # turn 64 cell locations into 8x8 array
-    locations_in_cells = np.array(location_in_cells).reshape(8, 8, 4)
+    locations_in_cells = np.array(location_in_cells).reshape(8, 8, 4) # pylint: disable=E1121
 
     return foundGems, locations_in_cells
 

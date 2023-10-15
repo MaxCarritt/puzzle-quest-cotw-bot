@@ -7,6 +7,7 @@ import numpy as np
 
 
 def get_series_length(futureArray):
+    """ returns the length of the longest series of 3 or more identical values"""
     rows, cols = len(futureArray), len(futureArray[0])
     series_length = 0
 
@@ -51,7 +52,8 @@ def get_series_length(futureArray):
 
 # get future array from json file for some testing
 def get_future_array():
-    with open('futureArray.json') as json_file:
+    """ returns the futureArray from the json file"""
+    with open('futureArray.json', encoding='utf-8') as json_file:
         data = json.load(json_file)
         futureArray = np.array(data)
     return futureArray
@@ -62,6 +64,7 @@ def get_future_array():
 
 
 def get_series_length_bad(futureArray):
+    """ returns the length of the longest series of 3 or more identical values"""
     rows, cols = len(futureArray), len(futureArray[0])
     series_length = 0
 

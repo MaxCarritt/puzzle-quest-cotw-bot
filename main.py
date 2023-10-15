@@ -153,11 +153,11 @@ def makeMoveClicks(pos1, pos2):
     pyautogui + win32api functions is necessary to click
     """
     pyautogui.click(pos1[0], pos1[1], duration=0.4, button='left')
-    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0) # pylint: disable=I1101
 
     pyautogui.doubleClick(pos2[0], pos2[1], duration=0.4, button='left')
     # win32api.SetCursorPos(adjusted_above_location)
-    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
+    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0) # pylint: disable=I1101
 
 
 def performMove(move, locations_in_cells, game_window, debug=False):
