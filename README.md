@@ -2,8 +2,11 @@
 
 a bot to play Puzzle Quest - Challenge of the Warlords for the Nintendo DS
 
-<video src='https://youtu.be/kb556f0fcpg' width=400/>
-
+<iframe width="560" height="315"
+src="https://youtu.be/kb556f0fcpg" 
+frameborder="0" 
+allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+allowfullscreen></iframe>
 
 [![Watch the video](https://img.youtube.com/vi/kb556f0fcpg/maxresdefault.jpg)](https://youtu.be/kb556f0fcpg)
 https://www.youtube.com/watch?v=kb556f0fcpg
