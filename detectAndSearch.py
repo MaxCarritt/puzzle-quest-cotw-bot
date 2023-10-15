@@ -1,14 +1,30 @@
+"""
+This module contains functions for 
+detecting and searching for icons in the Puzzle Quest game window.
+
+Functions:
+- getTemplateImages(): Loads template images from a folder and returns them as a dictionary.
+- getPqWindowScreenShot(): Takes a screenshot of the Puzzle Quest game window 
+    and returns it along with the window object.
+- detect_icons(screen, icon_templates, debug=False): Detects icons 
+    in the given screen using the provided icon templates and 
+    returns their locations as a dictionary.
+- findGrid(debug=False): Finds the grid in the Puzzle Quest game window and returns its location.
+"""
+
+import pprint
+import os
 import cv2
 import numpy as np
 import pygetwindow as gw
 import pyautogui
-import os
-import pprint
-import numpy as np
 
 
 # Load template images from a folder
 def getTemplateImages():
+    """
+    Loads template images from a folder and returns them as a dictionary.
+    """
     template_folder = 'template_images/'
     file_list = os.listdir(template_folder)
     icon_templates = {}
@@ -22,6 +38,9 @@ def getTemplateImages():
 
 
 def getPqWindowScreenShot():
+    """
+    Takes a screenshot of the Puzzle Quest game window and returns it along with the window object.
+    """
     game_window = gw.getWindowsWithTitle(
         "Puzzle Quest - Challenge of the Warlords")
     game_window = game_window[0]
@@ -32,6 +51,18 @@ def getPqWindowScreenShot():
 
 
 def detect_icons(screen, icon_templates, debug=False):
+    """
+    Detects the locations of icons in a given screen image using template matching.
+
+    Args:
+        screen: A PIL Image object representing the screen image.
+        icon_templates: A dictionary of icon names and corresponding template images.
+        debug: A boolean indicating whether to display debug information.
+
+    Returns:
+        A dictionary of icon names and corresponding lists of locations where they were found.
+    """
+
     screen_np = cv2.cvtColor(np.array(screen), cv2.COLOR_RGB2BGR)
     hsv_image = cv2.cvtColor(screen_np, cv2.COLOR_BGR2HSV)
 
@@ -91,15 +122,16 @@ def detect_icons(screen, icon_templates, debug=False):
         for loc in zip(*locations[::-1]):
             # Get the position of the detected icon and its dimensions
             top_left = loc
-            h, w = template_image.shape[:2]
-            bottom_right = (top_left[0] + w, top_left[1] + h)
+            # h, w = template_image.shape[:2]
+            # bottom_right = (top_left[0] + w, top_left[1] + h)
 
             if top_left[1] < topHalf:
                 continue
             # # Draw a rectangle around the detected icon
             # cv2.rectangle(screen_np, top_left, bottom_right, (0, 255, 0), 2)
             # # Print the detected icon's name
-            # cv2.putText(screen_np, icon_name, (top_left[0], top_left[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            # cv2.putText(screen_np, icon_name, (top_left[0], top_left[1] - 10)\
+            #   , cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
             # cv2.imshow("Icon Detection", screen_np)
             # cv2.waitKey(0)
             # cv2.destroyAllWindows()
@@ -117,19 +149,27 @@ def detect_icons(screen, icon_templates, debug=False):
         cv2.destroyAllWindows()
 
     # write allLocations to a file
-    with open('allLocations.txt', 'w') as f:
+    with open('allLocations.txt', 'w', encoding="utf-8") as f:
         f.write(pprint.pformat(allLocations))
 
     return allLocations
 
 
 def findGrid(debug=False):
+    """
+    Finds the grid in the screenshot of the game window and highlights it with a red rectangle.
+
+    Args:
+        debug (bool, optional): If True, displays the screenshot with the detected grid. Defaults to False.
+
+    Returns:
+        None
+    """    
     gameScreen = getPqWindowScreenShot()
     gameScreen = cv2.cvtColor(np.array(gameScreen), cv2.COLOR_RGB2BGR)
     gameScreen = cv2.cvtColor(gameScreen, cv2.COLOR_BGR2GRAY)
 
-    grid_example = cv2.imread(
-        '.\misc_images\grid_example.png', cv2.IMREAD_UNCHANGED)
+    grid_example = cv2.imread('.\misc_images\grid_example.png', cv2.IMREAD_UNCHANGED)
     grid_example = cv2.cvtColor(grid_example, cv2.COLOR_BGR2GRAY)
     grid_example = grid_example.astype(gameScreen.dtype)
 
@@ -150,6 +190,10 @@ def findGrid(debug=False):
 
 
 def findTopLeft(allLocations):
+    """ 
+    find the top left of the grid 
+    returns -inf if no gems are found
+    """
     min_x, min_y = float('inf'), float('inf')
 
     for loc in allLocations.values():
@@ -165,6 +209,10 @@ def findTopLeft(allLocations):
 
 
 def findBottomRight(allLocations):
+    """" 
+    find the bottom right of the grid 
+    returns -inf if no gems are found
+    """
     max_x, max_y = float('-inf'), float('-inf')
 
     for loc in allLocations.values():
@@ -181,6 +229,19 @@ def findBottomRight(allLocations):
 
 
 def getGrid(gameScreen, topLeft, bottomRight, debug=False):
+    """
+    Divides the given game screen into a grid of 8x8 cells, and returns a list of cell ranges.
+    
+    Parameters:
+    gameScreen (PIL.Image.Image): The game screen to divide into a grid.
+    topLeft (tuple): The (x, y) coordinates of the top-left corner of the grid.
+    bottomRight (tuple): The (x, y) coordinates of the bottom-right corner of the grid.
+    debug (bool, optional): Whether to show debug information. Defaults to False.
+    
+    Returns:
+    list: A list of tuples, where each tuple represents a cell range in the format (x1, y1, x2, y2).
+    """
+
     # calculate the width and height of each grid cell
     cellWidth = (bottomRight[0] - topLeft[0]) // 8
     cellHeight = (bottomRight[1] - topLeft[1]) // 8
@@ -216,6 +277,23 @@ def getGrid(gameScreen, topLeft, bottomRight, debug=False):
 
 
 def searchGrid(grid, allLocations, gameScreen, debug=False):
+    """
+    Searches for gems in a grid of cells on the game screen.
+
+    Args:
+        grid (list): A list of tuples representing the cell ranges to search for gems in.
+        allLocations (dict): A dictionary containing the locations of all gems on the game screen.
+        gameScreen (PIL.Image.Image): A screenshot of the game screen.
+        debug (bool, optional): Whether to print debug information 
+            and show visualizations. Defaults to False.
+
+    Returns:
+        tuple: A tuple containing two numpy arrays. 
+            The first array contains the most common gem in each cell of the grid, 
+            or 'empty' if the cell is empty. The second array contains the locations 
+            of each cell in the grid.
+    """
+
     gems_in_cells = []
     location_in_cells = []
     for cellRange in grid:
@@ -232,7 +310,7 @@ def searchGrid(grid, allLocations, gameScreen, debug=False):
             gems_in_cells.append(most_common_gem)
             location_in_cells.append(cellRange)
 
-            if True:
+            if debug:
                 for gem in gems_in_cell:
                     if gem != most_common_gem:
                         print("BAD GEM found here: " + gem)
@@ -240,10 +318,12 @@ def searchGrid(grid, allLocations, gameScreen, debug=False):
             # show the cellRange with the most common gem
             screen_np = cv2.cvtColor(np.array(gameScreen), cv2.COLOR_RGB2BGR)
             cv2.rectangle(
-                screen_np, (cellRange[0], cellRange[1]), (cellRange[2], cellRange[3]), (0, 255, 0), 2)
+                screen_np, (cellRange[0], cellRange[1]), \
+                    (cellRange[2], cellRange[3]), (0, 255, 0), 2)
 
             # put a label of the gam on the rectangle
-            # cv2.putText(screen_np, most_common_gem, (cellRange[0], cellRange[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            # cv2.putText(screen_np, most_common_gem, \
+            #   (cellRange[0], cellRange[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
             # cv2.imshow('Cell Ranges', screen_np)
             # cv2.waitKey(0)
             # cv2.destroyAllWindows()
@@ -276,6 +356,18 @@ def searchGrid(grid, allLocations, gameScreen, debug=False):
 
 
 def detect_turn_indicator(screenshot):
+    """
+    Detects a turn indicator icon in a given screenshot using template matching.
+    The function takes a screenshot as input and returns a boolean value indicating
+    whether the turn indicator icon was found in the screenshot or not.
+
+    Parameters:
+    screenshot (PIL.Image): A screenshot image in RGB format.
+
+    Returns:
+    bool: True if the turn indicator icon was found in the screenshot, False otherwise.
+    """
+
     screen_np = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
     hsv_image = cv2.cvtColor(screen_np, cv2.COLOR_BGR2HSV)
 
@@ -357,10 +449,3 @@ def detect_turn_indicator(screenshot):
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
     return found
-
-    # # Check if the template image is found on the left half of the screenshot
-    # if max_loc[0] < screenshot_gray.shape[1] / 2:
-    # 	print("your turn!")
-    # 	return True
-
-    return False

@@ -1,40 +1,29 @@
-from detectAndSearch import *
+""" Main Program for Puzzle Quest Bot"""
+
 import time
+from itertools import groupby
+import pprint
 import pyautogui
-import pydirectinput
-import ctypes
-import sys
 import win32api
 import win32con
-import json
-from itertools import groupby
+from detectAndSearch import detect_icons, findTopLeft, findBottomRight, \
+      getGrid, searchGrid, detect_turn_indicator, getPqWindowScreenShot, getTemplateImages
 
 
-def check_top_left(row, col, foundGemArray, thisGem):
-    # check top left
-    if row > 0 and col > 0:
-        if foundGemArray[row-1, col-1] == thisGem:
-            return True
-    return False
-
-
-def check_top_right(row, col, foundGemArray, thisGem):
-    # check top right
-    if row > 0 and col < len(foundGemArray[0])-1:
-        if foundGemArray[row-1, col+1] == thisGem:
-            return True
-    return False
-
-
-def check_top_right_right(row, col, foundGemArray, thisGem):
-    # check top right
-    if row > 0 and col < len(foundGemArray[0])-1:
-        if foundGemArray[row-1, col+1] == thisGem:
-            return True
-    return False
-
-
-def find_valid_moves(foundGemArray, debug=False):
+def findValidMoves(foundGemArray, debug=False):
+    """
+    Given a 2D array of gems, finds all valid moves that can be made by swapping two adjacent gems.
+    A move is considered valid if it results 
+    in a series of three or more identical gems in a row or column.
+    The function returns a list of tuples, 
+    where each tuple represents a valid move and contains the following elements:
+    - The row index of the gem being moved
+    - The column index of the gem being moved
+    - The direction of the move ('up', 'down', 'left', or 'right')
+    - The length of the series of identical gems that would result from the move
+    - The type of gem being moved (e.g. 'red', 'blue', 'green', 'skull', or 'empty')
+    If debug is True, the function prints debug information to the console.
+    """
     moves = []
     # if all the gems are empty in row 1 then return no moves
     emptyCount = 0
@@ -52,7 +41,7 @@ def find_valid_moves(foundGemArray, debug=False):
                 futureArray = foundGemArray.copy()
                 futureArray[i, j+1] = foundGemArray[i, j]
                 futureArray[i, j] = foundGemArray[i, j+1]  # swap the two gems
-                series_length = get_series_length(futureArray)
+                series_length = getSeriesLength(futureArray)
                 if series_length > 0:
                     # pprint.pprint(futureArray)
                     if debug:
@@ -64,7 +53,7 @@ def find_valid_moves(foundGemArray, debug=False):
                 futureArray = foundGemArray.copy()
                 futureArray[i, j-1] = foundGemArray[i, j]
                 futureArray[i, j] = foundGemArray[i, j-1]
-                series_length = get_series_length(futureArray)
+                series_length = getSeriesLength(futureArray)
                 if series_length > 0:
                     # pprint.pprint(futureArray)
                     if debug:
@@ -76,7 +65,7 @@ def find_valid_moves(foundGemArray, debug=False):
                 futureArray = foundGemArray.copy()
                 futureArray[i+1, j] = foundGemArray[i, j]
                 futureArray[i, j] = foundGemArray[i+1, j]
-                series_length = get_series_length(futureArray)
+                series_length = getSeriesLength(futureArray)
                 if series_length > 0:
                     # pprint.pprint(futureArray)
                     if debug:
@@ -89,7 +78,7 @@ def find_valid_moves(foundGemArray, debug=False):
                 futureArray = foundGemArray.copy()
                 futureArray[i-1, j] = thisGem
                 futureArray[i, j] = foundGemArray[i-1, j]  # swap the two gems
-                series_length = get_series_length(futureArray)
+                series_length = getSeriesLength(futureArray)
 
                 if series_length > 0:
                     # pprint.pprint(futureArray)
@@ -104,9 +93,19 @@ def find_valid_moves(foundGemArray, debug=False):
     return moves
 
 
-def get_series_length(futureArray, debug=False):
-    # imagines the future grid and checks for series of 3 or more
+def getSeriesLength(futureArray, debug=False):
+    """
+    This function takes a 2D array of integers and 
+    returns the length of the longest series of consecutive integers
+    in either a row or a column. If there are no series of at least length 3, it returns 0.
 
+    Parameters:
+    futureArray (list[list[int]]): A 2D array of integers.
+    debug (bool, optional): If True, prints debug information. Defaults to False.
+
+    Returns:
+    int: The length of the longest series of consecutive integers in either a row or a column.
+    """
     rows, cols = len(futureArray), len(futureArray[0])
     series_length = []
     for row in range(rows):
@@ -117,7 +116,7 @@ def get_series_length(futureArray, debug=False):
             res[k] = len(list(g))
 
         thisSeries = (max(res.values()))
-        seriesType = max(res, key=res.get)
+        # seriesType = max(res, key=res.get)
         if thisSeries >= 3:
             if debug:
                 print(
@@ -148,7 +147,11 @@ def get_series_length(futureArray, debug=False):
 
 
 def makeMoveClicks(pos1, pos2):
-    # for some reason this combination of pyautogui and win32api works for clicking in desmume
+    """
+    Given two positions, clicks on both to swap gems.
+    For some reason, the following combination of 
+    pyautogui + win32api functions is necessary to click
+    """
     pyautogui.click(pos1[0], pos1[1], duration=0.4, button='left')
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
 
@@ -158,7 +161,10 @@ def makeMoveClicks(pos1, pos2):
 
 
 def performMove(move, locations_in_cells, game_window, debug=False):
-    row, col, direction, seriesCount, gem = move
+    """
+    Given a move, performs the move in the game window.
+    """
+    row, col, direction, _ , _ = move
     offset = 18
     thisLocation = locations_in_cells[row, col]
     adjusted_this_location = (
@@ -188,6 +194,17 @@ def performMove(move, locations_in_cells, game_window, debug=False):
 
 
 def main():
+    """
+    Main function for the bot.
+
+    This function runs in an infinite loop,
+    checking if it is the player's turn.
+    If it is, it takes a screenshot of the game window,
+    finds the locations of all gems on the board,
+    and determines the best move to make.
+    It then performs the move.
+
+    """
     icon_templates = getTemplateImages()
 
     while True:
@@ -223,7 +240,7 @@ def main():
             grid, allLocations, screenshot, debug=False)
 
         # checks each gem , and determines if moving it will result in a match of 3 or more
-        moves = find_valid_moves(foundGemArray)
+        moves = findValidMoves(foundGemArray)
         pprint.pprint(moves)
 
         if moves:
