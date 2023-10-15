@@ -1,3 +1,6 @@
+# for troubleshooting the get_series_length function
+# this version of the function is not used in the main program
+
 import json
 import numpy as np
 
@@ -44,7 +47,7 @@ def get_series_length(futureArray):
 
 
 
-# get future array from json file
+# get future array from json file for some testing
 def get_future_array():
 	with open('futureArray.json') as json_file:
 		data = json.load(json_file)

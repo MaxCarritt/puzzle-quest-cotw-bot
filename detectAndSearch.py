@@ -23,7 +23,6 @@ def getTemplateImages():
 
 def getPqWindowScreenShot():
 	game_window = gw.getWindowsWithTitle("Puzzle Quest - Challenge of the Warlords")
-	print( game_window)
 	game_window = game_window[0]
 	if game_window is not None:
 		screenShot = pyautogui.screenshot(region=(game_window.left, game_window.top, game_window.width, game_window.height))
@@ -121,55 +120,6 @@ def detect_icons(screen,icon_templates, debug=False):
 
 	return allLocations
 
-def misc():
-	pass
-	# detected_tops.sort()  # Sort the detected rows
-	# row_ranges = []
-	# step = len(detected_tops) // grid_size[0]  # Step size for dividing the detected rows
-	# for i in range(grid_size[0]):
-	# 	start_index = i * step
-	# 	end_index = start_index + step - 1
-	# 	row_ranges.append((detected_tops[start_index], detected_tops[end_index]))
-
-	# print(row_ranges)
-
-	# detected_lefts.sort()
-	# column_ranges = []
-	# step = len(detected_lefts) // grid_size[1]
-	# for i in range(grid_size[1]):
-	# 	start_index = i * step
-	# 	end_index = start_index + step - 1
-	# 	column_ranges.append((detected_lefts[start_index], detected_lefts[end_index]))
-
-	# print(column_ranges)
-
-	# print('rows and columns found') 
-
-	# for loc in allLocations.get(icon_name, []):
-	# 	top_left = loc
-	# 	h, w = template_image.shape[:2]
-	# 	bottom_right = (top_left[0] + w, top_left[1] + h)
-
-	# 	# Determine the row index based on the detected y-coordinate
-	# 	for row_index, (start_y, end_y) in enumerate(row_ranges):
-	# 		if start_y <= top_left[1] <= end_y:
-	# 			break
-
-	# 	# Determine the column index based on the detected x-coordinate
-	# 	for col_index, (start_x, end_x) in enumerate(column_ranges):
-	# 		if start_x <= top_left[0] <= end_x:
-	# 			break
-
-	# 	# Update the grid position of the icon
-	# 	grid[row_index][col_index] = icon_name.replace(".png", "").replace("_gem", "")
-
-	# pprint.pprint(grid)
-	# for row in grid:
-	# 	print("|".join(row))
-	# 	print("-" * (len(row) * 2 + 1))
-
-	# cv2.waitKey(0)
-	# cv2.destroyAllWindows()
 
 def findGrid(debug=False):
 	gameScreen  = getPqWindowScreenShot()
@@ -237,7 +187,7 @@ def findTopLeft(allLocations):
 			if y < min_y:
 				min_y = y
 
-	print(f"Top-left coordinate: ({min_x}, {min_y})")
+	# print(f"Top-left coordinate: ({min_x}, {min_y})")
 	return (min_x - 20 , min_y - 10) #TODO: this should be more dynamic, will break at differnt size
 
 def findBottomRight(allLocations):
@@ -251,7 +201,7 @@ def findBottomRight(allLocations):
 				max_y = y
 	max_x += 40
 	max_y += 40
-	print(f"Bottom-right coordinate: ({max_x}, {max_y})")
+	# print(f"Bottom-right coordinate: ({max_x}, {max_y})")
 	return (max_x+ 10, max_y+10) #TODO: this should be more dynamic, will break at differnt size
 
 

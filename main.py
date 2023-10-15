@@ -130,20 +130,10 @@ def find_valid_moves(foundGemArray, debug=False):
 				
 
 def get_series_length(futureArray, debug=False):
-	rows, cols = len(futureArray), len(futureArray[0])
-	series_length = []
+	# imagines the future grid and checks for series of 3 or more
 
-	# for rowidx , row in enumerate(futureArray):
-	# 	for i in range(cols - 2):
-	# 		if row[i] == row[i+1] == row[i+2]:
-	# 			series_length = 3
-	# 			if i + 3 < cols and row[i+3] == row[i]:
-	# 				series_length = 4
-	# 			if i + 4 < cols and row[i+4] == row[i]:
-	# 				series_length = 5
-	# 				break
-	# 			if series_length >= 3:
-	# 				print(f"found a row series of length  {series_length} in row {rowidx}; ")    
+	rows, cols = len(futureArray), len(futureArray[0])
+	series_length = []  
 	for row in range(rows):
 		thisColumn = list(futureArray[row,:])
 
@@ -261,20 +251,7 @@ def main():
 			time.sleep(1)
 
 
-def is_admin():
-	try:
-		return ctypes.windll.shell32.IsUserAnAdmin()
-	except:
-		return False
-
 
 if __name__ == '__main__':
-	if True: # is_admin():
-		# Code of your program here
-		print("now running in admin mode\n press any key to continue")
-		main()
-		print('fin')
-	else:
-		# Re-run the program with admin rights
-		ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
-
+	main()
+	
