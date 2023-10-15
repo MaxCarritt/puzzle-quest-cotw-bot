@@ -1,5 +1,6 @@
-# for troubleshooting the get_series_length function
-# this version of the function is not used in the main program
+""" for troubleshooting the get_series_length function
+this version of the function is not used in the main program
+"""
 
 import json
 import numpy as np
