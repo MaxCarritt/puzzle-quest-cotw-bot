@@ -1,5 +1,16 @@
 # pquestbot
 
-a bot to play puzzle quest - challenge of the warlords
+a bot to play Puzzle Quest - Challenge of the Warlords for the Nintendo DS
 
-any emulator should theoretically work ,but I'm using DeSmuMe on Windows 11
+Any emulator should theoretically work,but I'm using DeSmuMe on Windows 11. The current implementation for clicking requires this running on Windows.
+
+
+*Needed Improvements:*
+- Move Optimization:
+    - Better skull move optimization, determine if the future game grid results in a series of skulls and prioritize that one. Currently it just picks a skull to be moved over everything else, but this might just mean its lining up other gems by moving a skull
+    - Detection of wild gems and logic to detect a series with a wild gem
+    - Determine why sometimes it thinks no moves are available
+- Game State:
+    - Detect if the game board has settled. Currently just waiting arbitrarily some time between moves.
+- Use of spells
+
